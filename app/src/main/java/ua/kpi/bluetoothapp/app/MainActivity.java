@@ -178,42 +178,31 @@ public class MainActivity extends Activity {
     }
 
     private String getBluetoothClass(int i) {
-        String type = "NOT_SPECIFIED" + " " + i;
         switch (i) {
             case BluetoothClass.Device.Major.AUDIO_VIDEO:
-                type = "AUDIO_VIDEO" + " " + i;
-                break;
+                return "AUDIO_VIDEO" + "=" + i;
             case BluetoothClass.Device.Major.COMPUTER:
-                type = "COMPUTER" + " " + i;
-                break;
+                return "COMPUTER" + "=" + i;
             case BluetoothClass.Device.Major.HEALTH:
-                type = "HEALTH" + " " + i;
-                break;
+                return "HEALTH" + "-" + i;
             case BluetoothClass.Device.Major.IMAGING:
-                type = "IMAGING" + " " + i;
-                break;
+                return "IMAGING" + "=" + i;
             case BluetoothClass.Device.Major.MISC:
-                type = "MISC" + " " + i;
-                break;
+                return "MISC" + "=" + i;
             case BluetoothClass.Device.Major.NETWORKING:
-                type = "NETWORKING" + " " + i;
-                break;
+                return "NETWORKING" + "=" + i;
             case BluetoothClass.Device.Major.PERIPHERAL:
-                type = "PERIPHERAL" + " " + i;
-                break;
+                return "PERIPHERAL" + "=" + i;
             case BluetoothClass.Device.Major.PHONE:
-                type = "PHONE" + " " + i;
-                break;
+                return "PHONE" + "=" + i;
             case BluetoothClass.Device.Major.TOY:
-                type = "TOY" + " " + i;
-                break;
+                return "TOY" + "=" + i;
             case BluetoothClass.Device.Major.UNCATEGORIZED:
-                type = "UNCATEGORIZED" + " " + i;
-                break;
+                return "UNCATEGORIZED" + "-" + i;
             case BluetoothClass.Device.Major.WEARABLE:
-                type = "WEARABLE" + " " + i;
-                break;
+                return "WEARABLE" + "=" + i;
+            default:
+                return "NOT_SPECIFIED" + "=" + i;
         }
-        return type;
     }
 }
