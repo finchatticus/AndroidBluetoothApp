@@ -2,6 +2,7 @@ package ua.kpi.bluetoothapp.app;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothClass;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -127,7 +128,7 @@ public class MainActivity extends Activity {
 
         // put it's one to the adapter
         for(BluetoothDevice device : pairedDevices)
-            BTArrayAdapter.add(device.getName()+ "\n" + device.getAddress());
+            BTArrayAdapter.add(device.getName()+ "\n" + getBluetoothClass(device.getBluetoothClass().getDeviceClass()) + "\n" + device.getAddress());
 
         Toast.makeText(getApplicationContext(),"Show Paired Devices",
                 Toast.LENGTH_SHORT).show();
@@ -142,7 +143,7 @@ public class MainActivity extends Activity {
                 // Get the BluetoothDevice object from the Intent
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 // add the name and the MAC address of the object to the arrayAdapter
-                BTArrayAdapter.add(device.getName() + "\n" + device.getAddress());
+                BTArrayAdapter.add(device.getName() + "\n" + getBluetoothClass(device.getBluetoothClass().getDeviceClass()) + "\n" + device.getAddress());
                 BTArrayAdapter.notifyDataSetChanged();
             }
         }
@@ -174,5 +175,45 @@ public class MainActivity extends Activity {
         // TODO Auto-generated method stub
         super.onDestroy();
         unregisterReceiver(bReceiver);
+    }
+
+    private String getBluetoothClass(int i) {
+        String type = "NOT_SPECIFIED" + " " + i;
+        switch (i) {
+            case BluetoothClass.Device.Major.AUDIO_VIDEO:
+                type = "AUDIO_VIDEO" + " " + i;
+                break;
+            case BluetoothClass.Device.Major.COMPUTER:
+                type = "COMPUTER" + " " + i;
+                break;
+            case BluetoothClass.Device.Major.HEALTH:
+                type = "HEALTH" + " " + i;
+                break;
+            case BluetoothClass.Device.Major.IMAGING:
+                type = "IMAGING" + " " + i;
+                break;
+            case BluetoothClass.Device.Major.MISC:
+                type = "MISC" + " " + i;
+                break;
+            case BluetoothClass.Device.Major.NETWORKING:
+                type = "NETWORKING" + " " + i;
+                break;
+            case BluetoothClass.Device.Major.PERIPHERAL:
+                type = "PERIPHERAL" + " " + i;
+                break;
+            case BluetoothClass.Device.Major.PHONE:
+                type = "PHONE" + " " + i;
+                break;
+            case BluetoothClass.Device.Major.TOY:
+                type = "TOY" + " " + i;
+                break;
+            case BluetoothClass.Device.Major.UNCATEGORIZED:
+                type = "UNCATEGORIZED" + " " + i;
+                break;
+            case BluetoothClass.Device.Major.WEARABLE:
+                type = "WEARABLE" + " " + i;
+                break;
+        }
+        return type;
     }
 }
