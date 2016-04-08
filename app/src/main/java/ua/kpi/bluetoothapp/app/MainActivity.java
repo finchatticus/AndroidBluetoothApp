@@ -8,10 +8,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.util.Log;
 import android.view.View;
 import android.widget.*;
 
@@ -93,6 +91,17 @@ public class MainActivity extends Activity {
             // create the arrayAdapter that contains the BTDevices, and set it to the ListView
             BTArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
             myListView.setAdapter(BTArrayAdapter);
+
+            myListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    String deviceInfo = ((TextView) view).getText().toString();
+                    String[] arrDeviceInfo = deviceInfo.split("\n");
+                    String name = arrDeviceInfo[0];
+                    String bluetoothClass = arrDeviceInfo[1];
+                    String bluetoothMAC = arrDeviceInfo[2];
+                    Log.d("myLogs", "itemClick: position = " + position + ", id = " + id + ", name = " + name + ", class = " + bluetoothClass + ", deviceMAC = " + bluetoothMAC );
+                }
+            });
         }
     }
 
@@ -128,7 +137,7 @@ public class MainActivity extends Activity {
 
         // put it's one to the adapter
         for(BluetoothDevice device : pairedDevices)
-            BTArrayAdapter.add(device.getName()+ "\n" + getBluetoothClass(device.getBluetoothClass().getDeviceClass()) + "\n" + device.getAddress());
+            BTArrayAdapter.add(device.getName()+ "\n" + getBluetoothClass(device.getBluetoothClass().getDeviceClass()) + "\n" + device.getAddress() + "\n" + getBondState(device.getBondState()));
 
         Toast.makeText(getApplicationContext(),"Show Paired Devices",
                 Toast.LENGTH_SHORT).show();
@@ -143,7 +152,7 @@ public class MainActivity extends Activity {
                 // Get the BluetoothDevice object from the Intent
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 // add the name and the MAC address of the object to the arrayAdapter
-                BTArrayAdapter.add(device.getName() + "\n" + getBluetoothClass(device.getBluetoothClass().getDeviceClass()) + "\n" + device.getAddress());
+                BTArrayAdapter.add(device.getName() + "\n" + getBluetoothClass(device.getBluetoothClass().getDeviceClass()) + "\n" + device.getAddress() + "\n" + getBondState(device.getBondState()));
                 BTArrayAdapter.notifyDataSetChanged();
             }
         }
@@ -168,13 +177,6 @@ public class MainActivity extends Activity {
 
         Toast.makeText(getApplicationContext(),"Bluetooth turned off",
                 Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    protected void onDestroy() {
-        // TODO Auto-generated method stub
-        super.onDestroy();
-        unregisterReceiver(bReceiver);
     }
 
     private String getBluetoothClass(int i) {
@@ -204,5 +206,25 @@ public class MainActivity extends Activity {
             default:
                 return "NOT_SPECIFIED" + "=" + i;
         }
+    }
+
+    private String getBondState(int i) {
+        switch (i) {
+            case BluetoothDevice.BOND_BONDED:
+                return "PAIRED=" + i;
+            case BluetoothDevice.BOND_BONDING:
+                return "PAIRING=" + i;
+            case BluetoothDevice.BOND_NONE:
+                return "NOT_PAIRED=" + i;
+            default:
+                return "UNKNOWN=" + i;
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        // TODO Auto-generated method stub
+        super.onDestroy();
+        unregisterReceiver(bReceiver);
     }
 }
