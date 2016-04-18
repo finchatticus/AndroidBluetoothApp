@@ -13,6 +13,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 
@@ -28,6 +30,7 @@ public class MainActivity extends Activity {
     private Set<BluetoothDevice> pairedDevices;
     private ListView myListView;
     private ArrayAdapter<String> BTArrayAdapter;
+    private List<BluetoothDevice> bluetoothList = new ArrayList<BluetoothDevice>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +95,7 @@ public class MainActivity extends Activity {
             BTArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
             myListView.setAdapter(BTArrayAdapter);
 
+
             myListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     String deviceInfo = ((TextView) view).getText().toString();
@@ -99,7 +103,9 @@ public class MainActivity extends Activity {
                     String name = arrDeviceInfo[0];
                     String bluetoothClass = arrDeviceInfo[1];
                     String bluetoothMAC = arrDeviceInfo[2];
-                    Log.d("myLogs", "itemClick: position = " + position + ", id = " + id + ", name = " + name + ", class = " + bluetoothClass + ", deviceMAC = " + bluetoothMAC );
+                    String bluetoothBondState = arrDeviceInfo[3];
+                    Log.d("myLogs", "itemClick: position = " + position + ", id = " + id + ", name = " + name + ", class = " + bluetoothClass + ", deviceMAC = " + bluetoothMAC + ", bond state = " + bluetoothBondState );
+                    Log.d("myLogs bl dev", "itemClick: list = " + bluetoothList.get(position).toString() + ", size = " + bluetoothList.size());
                 }
             });
         }
@@ -113,7 +119,7 @@ public class MainActivity extends Activity {
             Toast.makeText(getApplicationContext(),"Bluetooth turned on" ,
                     Toast.LENGTH_LONG).show();
         }
-        else{
+        else {
             Toast.makeText(getApplicationContext(),"Bluetooth is already on",
                     Toast.LENGTH_LONG).show();
         }
@@ -151,9 +157,24 @@ public class MainActivity extends Activity {
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 // Get the BluetoothDevice object from the Intent
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                // add the name and the MAC address of the object to the arrayAdapter
-                BTArrayAdapter.add(device.getName() + "\n" + getBluetoothClass(device.getBluetoothClass().getDeviceClass()) + "\n" + device.getAddress() + "\n" + getBondState(device.getBondState()));
-                BTArrayAdapter.notifyDataSetChanged();
+                /*
+                //add only paired and MISC devices
+                if(device.getBluetoothClass().getDeviceClass() == 0 && device.getBondState() == 12) {
+                    // add the name and the MAC address of the object to the arrayAdapter
+                    BTArrayAdapter.add(device.getName() + "\n" + getBluetoothClass(device.getBluetoothClass().getDeviceClass()) + "\n" + device.getAddress() + "\n" + getBondState(device.getBondState()));
+                    BTArrayAdapter.notifyDataSetChanged();
+
+                    bluetoothList.add(device);
+                }
+                */
+                //add only MISC devices
+                if(device.getBluetoothClass().getDeviceClass() == 0) {
+                    // add the name and the MAC address of the object to the arrayAdapter
+                    BTArrayAdapter.add(device.getName() + "\n" + getBluetoothClass(device.getBluetoothClass().getDeviceClass()) + "\n" + device.getAddress() + "\n" + getBondState(device.getBondState()));
+                    BTArrayAdapter.notifyDataSetChanged();
+
+                    bluetoothList.add(device);
+                }
             }
         }
     };
@@ -162,10 +183,13 @@ public class MainActivity extends Activity {
         if (myBluetoothAdapter.isDiscovering()) {
             // the button is pressed when it discovers, so cancel the discovery
             myBluetoothAdapter.cancelDiscovery();
+            Toast.makeText(getApplicationContext(),"Bluetooth cancel", Toast.LENGTH_LONG).show();
         }
         else {
             BTArrayAdapter.clear();
+            bluetoothList.clear();
             myBluetoothAdapter.startDiscovery();
+            Toast.makeText(getApplicationContext(),"Bluetooth search", Toast.LENGTH_LONG).show();
 
             registerReceiver(bReceiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
         }
